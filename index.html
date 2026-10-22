@@ -30,13 +30,13 @@ body{
 
 header{padding:18px 16px 16px;background:linear-gradient(135deg,#17294a 0%,#0d1524 72%);border-bottom:1px solid var(--line)}
 .eyebrow{font-size:.7rem;letter-spacing:.14em;color:var(--gold);font-weight:800}
-h1{font-size:clamp(1.3rem,4.4vw,2rem);margin:6px 0 4px}
-.sub{color:var(--dim);font-size:.8rem}
+h1{font-size:clamp(1.3rem,4.4vw,2rem);margin:6px 0}
 main{max-width:1700px;margin:0 auto;padding:12px 12px 32px}
 
-.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin:4px 0 12px}
-.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:11px;padding:10px 12px;color:#ffe9ad;font-size:.84rem}
-.note b{display:block;color:#fff3c9;font-size:.78rem;letter-spacing:.04em;margin-bottom:3px}
+/* 注意事項は1枚1行で書ききる（スマホで縦に伸びないように） */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:7px;margin:4px 0 10px}
+.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:10px;padding:6px 10px;color:#ffe9ad;font-size:.8rem;line-height:1.35}
+.note b{color:#fff3c9;font-size:.75rem;letter-spacing:.04em;margin-right:7px}
 
 .bar-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
 .pill{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:4px 10px;font-size:.73rem;color:var(--dim);white-space:nowrap}
@@ -53,6 +53,9 @@ main{max-width:1700px;margin:0 auto;padding:12px 12px 32px}
 
 h2{font-size:1rem;margin:20px 0 8px}
 h2 .hint{font-weight:400;font-size:.74rem;color:var(--dim);margin-left:8px}
+
+/* ジョブ名はPCで正式名、スマホで頭文字（表ヘッダと絞り込みボタンで共用） */
+.jn-s{display:none}
 
 /* ================= タイムライン本体 ================= */
 .scroller{
@@ -75,7 +78,6 @@ h2 .hint{font-weight:400;font-size:.74rem;color:var(--dim);margin-left:8px}
   border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
 }
 .hc.corner{left:0;z-index:6}
-.hc .jn-s{display:none}
 
 /* 開幕バンド（時間軸の外） */
 .ob{
@@ -194,9 +196,14 @@ footer b{color:#e9f0f9}
   .tl{width:max-content;min-width:100%}
   header{padding:14px 12px}
   main{padding:10px 10px 28px}
-  .note{font-size:.8rem}
-  .hc .jn-l{display:none}
-  .hc .jn-s{display:inline;font-size:.95rem}
+  .note{font-size:.78rem;padding:5px 9px}
+  /* 絞り込みボタンを頭文字にして1行に収める */
+  .jn-l{display:none}
+  .jn-s{display:inline}
+  .hc .jn-s{font-size:.95rem}
+  .ctrl .lbl{display:none}
+  .ctrl{gap:5px}
+  .jbtn{padding:6px 10px}
   .tchip{font-size:.72rem;padding:3px 6px}
   .gname,.grate{left:5px;max-width:calc(var(--evw) - 10px)}
   .gname{font-size:.71rem;padding:1px 5px}
@@ -214,7 +221,7 @@ footer b{color:#e9f0f9}
   body{background:#fff;color:#111}
   header{background:#fff;border-color:#bbb}
   .eyebrow{color:#8a6a10}
-  .sub,footer,.card .empty,.card li .wh{color:#555}
+  footer,.card .empty,.card li .wh{color:#555}
   .note,.todo,.todo p,.todo li{background:#fffbe9;color:#3a2f06;border-color:#c9b36a}
   .note b{color:#3a2f06}
   .scroller{max-height:none;overflow:visible;border-color:#999;background:#fff}
@@ -246,20 +253,19 @@ footer b{color:#e9f0f9}
 <header>
   <div class="eyebrow">FINAL FANTASY XIV · 絶ケフカ</div>
   <h1>フェーズ4｜軽減・ヒールタイムライン</h1>
-  <div class="sub">縦軸＝経過秒（等分）／横軸＝ジョブ。帯の長さがそのままバフの効果時間です。</div>
 </header>
 
 <main>
   <div class="notes">
     <div class="note"><b>開幕</b>ナイトのランパ空焚きの上に鼓舞展</div>
-    <div class="note"><b>軽減注意点</b>10秒なら2か所に乗るので最大限のるように</div>
+    <div class="note"><b>軽減注意</b>バフを最大限2か所に乗せる</div>
   </div>
 
   <div class="bar-row">
     <span class="pill">▲ 軽減</span>
     <span class="pill">● ヒール</span>
-    <span class="pill"><span class="sw" style="background:var(--mit)"></span>緑実線＝軽減が乗る範囲</span>
-    <span class="pill"><span class="sw" style="background:repeating-linear-gradient(180deg,var(--heal) 0 3px,transparent 3px 5px)"></span>青点線＝Hotの乗る範囲</span>
+    <span class="pill"><span class="sw" style="background:var(--mit)"></span>緑実線＝軽減範囲</span>
+    <span class="pill"><span class="sw" style="background:repeating-linear-gradient(180deg,var(--heal) 0 3px,transparent 3px 5px)"></span>青点線＝Hot</span>
   </div>
 
   <h2>タイムライン<span class="hint">ジョブ名のボタンで表示を絞り込めます</span></h2>
@@ -646,7 +652,10 @@ function renderControls(){
   JOBS.forEach(j=>{
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'jbtn '+j.id; b.id = 'btn-'+j.id;
-    b.textContent = j.name; b.setAttribute('aria-pressed','true');
+    b.innerHTML = '<span class="jn-l">'+esc(j.name)+'</span>'
+                + '<span class="jn-s">'+esc(j.short)+'</span>';
+    b.setAttribute('aria-label', j.name);
+    b.setAttribute('aria-pressed','true');
     b.addEventListener('click', ()=>{
       if(visible.has(j.id)){
         if(visible.size === 1) return;
