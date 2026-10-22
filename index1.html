@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1a">
+<title>絶ケフカ P4 軽減・ヒールタイムライン（極小版）</title>
+<style>
+:root{
+  --bg:#0a0f1a; --panel:#111a2b; --panel2:#0d1524; --head:#16233a; --ev:#131f33;
+  --line:#2a3b56; --line2:#1e2d44; --grid:#19253d;
+  --txt:#e9f0f9; --dim:#9fb0c6; --gold:#f5c96a;
+  --mit:#34d399; --heal:#60a5fa; --warn:#fbbf24;
+  --pld:#f3d57a; --drk:#c5aaff; --ast:#8ec9ff; --sch:#7fe3b5; --dnc:#ff9ed0; --rdm:#ffab8e;
+  --gc:#a78bfa;  --ht:#f1686a;  --nz:#6f7f98;
+  --evw:68px; --axish:328px;
+  --jobw:minmax(60px,1fr);
+  --w1:var(--jobw); --w2:var(--jobw); --w3:var(--jobw);
+  --w4:var(--jobw); --w5:var(--jobw); --w6:var(--jobw);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--txt);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+
+header{padding:11px 11px 9px;background:linear-gradient(135deg,#17294a 0%,#0d1524 72%);border-bottom:1px solid var(--line)}
+.eyebrow{font-size:.64rem;letter-spacing:.14em;color:var(--gold);font-weight:800}
+h1{font-size:clamp(1.05rem,3.8vw,1.5rem);margin:4px 0}
+main{max-width:1700px;margin:0 auto;padding:8px 8px 24px}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px;margin:3px 0 6px}
+.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:8px;padding:4px 7px;color:#ffe9ad;font-size:.73rem;line-height:1.35}
+.note b{color:#fff3c9;font-size:.69rem;letter-spacing:.04em;margin-right:6px}
+
+.bar-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 6px}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:2px 8px;font-size:.68rem;color:var(--dim);white-space:nowrap}
+.pill .sw{display:inline-block;width:8px;height:8px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.ctrl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 6px}
+.ctrl .lbl{font-size:.68rem;color:var(--dim);font-weight:700;margin-right:2px}
+.jbtn{font:inherit;font-size:.73rem;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--dim);border-radius:7px;padding:4px 9px;line-height:1}
+.jbtn[aria-pressed="true"]{background:#1b2a44;border-color:currentColor}
+.jbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.jbtn.all{color:var(--gold)}
+.jbtn.pld[aria-pressed="true"]{color:var(--pld)} .jbtn.drk[aria-pressed="true"]{color:var(--drk)}
+.jbtn.ast[aria-pressed="true"]{color:var(--ast)} .jbtn.sch[aria-pressed="true"]{color:var(--sch)}
+.jbtn.dnc[aria-pressed="true"]{color:var(--dnc)} .jbtn.rdm[aria-pressed="true"]{color:var(--rdm)}
+
+h2{font-size:.9rem;margin:14px 0 6px}
+h2 .hint{font-weight:400;font-size:.7rem;color:var(--dim);margin-left:7px}
+.jn-s{display:none}
+
+/* ================= タイムライン本体 ================= */
+.scroller{
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.tl{
+  display:grid;
+  grid-template-columns:var(--evw) var(--w1) var(--w2) var(--w3) var(--w4) var(--w5) var(--w6);
+  grid-template-rows:auto auto var(--axish);
+  width:100%;
+}
+.off{display:none}
+
+/* ヘッダ：ジョブ名は略称のみ */
+.hc{
+  position:sticky;top:0;z-index:5;background:var(--head);
+  text-align:center;font-size:.68rem;font-weight:800;padding:2px 1px;
+  border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
+}
+.hc.corner{left:0;z-index:6;font-size:.56rem}
+
+/* 開幕バンド（時間軸の外） */
+.ob{
+  padding:2px 3px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
+  background:#1b1809;min-width:0;
+}
+.ob.lead{position:sticky;left:0;z-index:4;background:#211d0d;border-left:2px solid var(--gold);border-right:1px solid var(--line)}
+.ob .olab{display:inline-block;background:#3a3112;border:1px solid #7a6420;border-radius:4px;padding:0 3px;font-size:.56rem;font-weight:800;color:var(--gold);white-space:nowrap}
+.ob .on{display:block;font-weight:800;font-size:.52rem;color:#ffe9ad;white-space:nowrap;overflow:hidden}
+
+/* 時間軸の列 */
+.tcol{position:relative;z-index:1;border-right:1px solid var(--line2);min-width:0}
+.tcol.ruler{
+  position:sticky;left:0;z-index:3;background:var(--ev);
+  border-right:1px solid var(--line);border-left:2px solid var(--line);
+}
+
+/* 5秒ごとの薄い横線 */
+.gridlines{grid-column:1 / -1;grid-row:3;position:relative;z-index:0;pointer-events:none}
+.gl5{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--grid)}
+
+/* ギミック発動ライン */
+.glines{grid-column:1 / -1;grid-row:3;position:relative;z-index:4;pointer-events:none}
+.gline{position:absolute;left:0;right:0;height:0;border-top:2px solid currentColor}
+.gline.gc{color:var(--gc)}
+.gline.ht{color:var(--ht)}
+.gline.nazo{color:var(--nz);border-top-width:1px;border-top-style:dashed}
+.gtop{position:absolute;left:0;right:0;bottom:0}
+/* 軽減の数字は線にくっつける（枠の上辺を線に重ねる） */
+.gbot{position:absolute;left:0;right:0;top:-1px}
+.gname,.grate{
+  position:sticky;left:3px;width:max-content;
+  max-width:calc(var(--evw) - 6px);overflow:hidden;
+  background:#0e1726;border:1px solid currentColor;border-radius:4px;
+}
+/* font-size を自前で持たないと行ボックスが本文サイズで取られて枠が無駄に高くなる */
+.gname{display:block;padding:0 3px;font-size:.55rem;line-height:1.12}
+.gname .gt{display:block;font-size:.54rem;font-weight:900;color:var(--gold);white-space:nowrap}
+.gname .gn{display:block;font-size:.55rem;font-weight:800;white-space:nowrap}
+/* なぞなぞは1行で、枠も最小に */
+.gline.nazo .gname{font-size:.48rem;line-height:1.1;padding:0 2px;border-radius:3px}
+.gline.nazo .gname .gt,.gline.nazo .gname .gn{display:inline;font-size:.48rem;font-weight:700}
+.gline.nazo .gname .gt{margin-right:2px}
+/* 軽減率は数字だけ（例 15,10,10%） */
+.grate{padding:0 3px;font-size:.54rem;font-weight:800;color:#ffd886;line-height:1.1;white-space:nowrap}
+
+/* バフの帯：2px の細線。始点に横棒・終点に▼ */
+.tbar{position:absolute;width:2px;border-radius:1px;background:currentColor}
+.tbar.mit{color:var(--mit)}
+.tbar.heal{color:var(--heal)}
+.tbar.dash{background:repeating-linear-gradient(180deg,currentColor 0 3px,transparent 3px 6px)}
+.tbar.cap::before{content:"";position:absolute;top:-3px;left:-1px;right:-1px;height:2px;border-radius:1px;background:currentColor}
+.tbar.arrow::after{content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:3px solid transparent;border-right:3px solid transparent;border-top:5px solid currentColor}
+.tbar.clip::after{display:none}
+.tbar.clip{
+  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 12px),transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 12px),transparent 100%);
+}
+
+/* バフ名のチップ。緑枠＝軽減／青枠＝ヒール。軽減率は名前の下の行 */
+.tchip{
+  position:absolute;right:2px;border:1px solid;border-radius:4px;padding:1px 2px;
+  font-size:.46rem;line-height:1.15;font-weight:800;letter-spacing:-.01em;
+}
+.tchip.mit{background:#0e2b23;border-color:#2b8a68;color:#cdf8e8;--cc:var(--mit)}
+.tchip.heal{background:#0f2440;border-color:#2f6fa8;color:#d8eaff;--cc:var(--heal)}
+.tchip .nm{display:block;white-space:nowrap}
+.tchip .vl{display:block;white-space:nowrap;color:var(--warn)}
+.tchip.heal .vl{color:#9ccbff}
+/* 実際の使用秒とチップ位置がずれた分をつなぐ引き出し線 */
+.conn{position:absolute;left:-3px;top:5px;width:3px;height:1px;background:var(--cc);opacity:.5}
+.conn i{position:absolute;left:0;top:var(--ct,0px);width:1px;height:var(--ch,0px);background:var(--cc)}
+
+.pld{color:var(--pld)} .drk{color:var(--drk)} .ast{color:var(--ast)}
+.sch{color:var(--sch)} .dnc{color:var(--dnc)} .rdm{color:var(--rdm)}
+.scrollhint{display:none}
+
+/* ================= 下部 ================= */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;align-items:start}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:7px 8px;min-width:0}
+.card h3{margin:0 0 4px;font-size:.78rem}
+.card ul{margin:0;padding-left:.9em}
+.card li{font-size:.7rem;line-height:1.3;margin:4px 0;color:#d7e2f0;overflow-wrap:anywhere}
+.card li .vl{color:var(--warn);font-weight:800;font-size:.64rem;margin-left:4px;white-space:nowrap}
+.card li .hot{color:#8fc8ff;font-weight:800;font-size:.64rem;margin-left:4px}
+.card li .mo{color:#c9d6e6;font-size:.64rem;margin-left:4px}
+.card li .wh{color:var(--dim);font-size:.64rem}
+.card .empty{font-size:.7rem;color:var(--dim);margin:0}
+.todo{border:1px solid #6d5a2c;background:#1c1810;border-radius:10px;padding:9px 11px}
+.todo p{margin:0;font-size:.75rem;color:#ffe9ad}
+.todo ul{margin:6px 0 0;padding-left:1.1em}
+.todo li{font-size:.76rem;margin:4px 0;color:#ffe9ad}
+footer{margin:16px 0 0;color:var(--dim);font-size:.7rem;line-height:1.65}
+footer b{color:#e9f0f9}
+
+@media (max-width:760px){
+  /* 時刻60px + ジョブ55px×6 = 390px。横スクロールなしで6ジョブ入る */
+  :root{--evw:60px;--jobw:55px}
+  .tl{width:max-content;min-width:100%}
+  header{padding:9px 8px}
+  main{padding:6px 6px 20px}
+  .note{font-size:.72rem;padding:3px 7px}
+  .jn-l{display:none}
+  .jn-s{display:inline}
+  .ctrl .lbl{display:none}
+  .ctrl{gap:4px}
+  .jbtn{padding:4px 8px}
+  .gname,.grate{left:2px;max-width:calc(var(--evw) - 4px)}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+}
+
+@media print{
+  :root{--grid:#e2e2e2}
+  body{background:#fff;color:#111}
+  header{background:#fff;border-color:#bbb}
+  .eyebrow{color:#8a6a10}
+  footer,.card .empty,.card li .wh{color:#555}
+  .note,.todo,.todo p,.todo li{background:#fffbe9;color:#3a2f06;border-color:#c9b36a}
+  .note b{color:#3a2f06}
+  .scroller{overflow:visible;border-color:#999;background:#fff}
+  .ctrl,.scrollhint{display:none}
+  .hc{background:#eee;color:#111;position:static}
+  .tcol.ruler{background:#f6f6f6;position:static}
+  .ob{background:#fffbe9;color:#3a2f06}
+  .ob.lead{background:#fdf3cd;position:static}
+  .ob .on,.ob .olab{color:#6b5407}
+  .gname,.grate{position:static;max-width:none;background:#fff}
+  .grate{color:#7a5600}
+  .tchip.mit{background:#eafaf2;border-color:#3f9c78;color:#13402f}
+  .tchip.heal{background:#eaf2fd;border-color:#3f78b5;color:#12304f}
+  .tchip .vl,.tchip.heal .vl{color:#8a5a00}
+  .card{background:#fff;border-color:#bbb}
+  .card li{color:#222}
+  .card li .vl{color:#8a5a00}
+  .card li .hot{color:#1a5a9c}
+  .card li .mo,.card li .wh{color:#555}
+  footer b{color:#111}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">FINAL FANTASY XIV · 絶ケフカ</div>
+  <h1>フェーズ4｜軽減・ヒールタイムライン</h1>
+</header>
+
+<main>
+  <div class="notes">
+    <div class="note"><b>開幕</b>ナイトのランパ空焚きの上に鼓舞展</div>
+    <div class="note"><b>軽減注意</b>バフを最大限2か所に乗せる</div>
+  </div>
+
+  <div class="bar-row">
+    <span class="pill"><span class="sw" style="background:var(--mit)"></span>緑＝軽減（実線＝効果範囲）</span>
+    <span class="pill"><span class="sw" style="background:var(--heal)"></span>青＝ヒール（点線＝Hot範囲）</span>
+    <span class="pill">文字が小さい場合はピンチで拡大</span>
+  </div>
+
+  <h2>タイムライン<span class="hint">名前が読みにくければ下のジョブ別メモを参照</span></h2>
+
+  <div class="ctrl" id="ctrl"><span class="lbl">表示ジョブ</span></div>
+
+  <div class="scroller">
+    <div class="scrollhint">← 横にスクロールしてジョブごとの担当を確認 →</div>
+    <div class="tl" id="tl" role="group" aria-label="絶ケフカP4 軽減・ヒールタイムライン（縦軸＝秒、横軸＝ジョブ）"></div>
+  </div>
+
+  <h2>ジョブ別メモ</h2>
+  <div class="cards" id="cards"></div>
+
+  <h2>要確認リスト</h2>
+  <div class="todo" id="todo"></div>
+
+  <footer>
+    ・縦軸は<b>1秒＝等間隔</b>。帯の長さ＝効果時間、帯の位置＝使用タイミングです。<br>
+    ・灰色の破線＝なぞなぞ発動、紫＝グラクロ、赤＝ほのお・つなみ（炎・津波）。<br>
+    ・効果時間は公式ジョブガイド（<a href="https://jp.finalfantasyxiv.com/jobguide/" style="color:var(--ast)">jp.finalfantasyxiv.com/jobguide</a>）の値です。
+  </footer>
+</main>
+
+<script>
+/* =========================================================================
+   データ定義：ここだけ直せば表・カード・要確認リストがすべて更新されます
+   ========================================================================= */
+
+const PPS = 8;       /* 1秒あたりのピクセル数。41秒 × 8px = 328px（約8.7cm） */
+const T0  = -3;      /* 軸の開始秒。0:00 より前に置くバフのための助走 */
+const T1  = 38;      /* 軸の終了秒。グラクロ3回目までを見るので、その先は切る */
+
+const JOBS = [
+  {id:'pld', name:'ナイト',   short:'ナ'},
+  {id:'drk', name:'暗黒騎士', short:'暗'},
+  {id:'ast', name:'占星術師', short:'占'},
+  {id:'sch', name:'学者',     short:'学'},
+  {id:'dnc', name:'踊り子',   short:'踊'},
+  {id:'rdm', name:'赤魔道士', short:'赤'}
+];
+
+/* ギミックの発動時刻
+   tone : gc=グラクロ(紫) / ht=ほのお・つなみ(赤) / nazo=なぞなぞ(灰)
+   mit  : 軽減率。表には数字だけを「15,10,10%」の形で出す */
+const EVENTS = [
+  {t:0,  tone:'nazo', name:'なぞなぞ'},
+  {t:4,  tone:'gc',   name:'グラクロ1', mit:[15,10,10]},
+  {t:11, tone:'ht',   name:'炎・津波',  mit:[10,10,15]},
+  {t:15, tone:'nazo', name:'なぞなぞ'},
+  {t:19, tone:'gc',   name:'グラクロ2', mit:[10,10,15]},
+  {t:26, tone:'ht',   name:'炎・津波',  mit:[10,10,10]},
+  {t:30, tone:'nazo', name:'なぞなぞ'},
+  {t:34, tone:'gc',   name:'グラクロ3', mit:[10,10,10]}
+];
+
+/* 時間軸の外（開幕） */
+const OPENING = {
+  time:'-0:26', name:'開幕',
+  items:[
+    {job:'pld', type:'mit', name:'ランパ空焚き'},
+    {job:'sch', type:'mit', name:'鼓舞展開'}
+  ]
+};
+
+/* バフ
+   t      : 使用する秒
+   dur    : 効果が続く秒（省略すると単発＝チップのみ）
+   para   : 軽減とHotのように効果時間が別のものを、同じ秒から並行して2本引く
+   name   : 「|」で区切ると枠の中で改行する
+   val    : 表のチップで名前の下に出す数字
+   memo   : ジョブ別メモにだけ出す補足
+   covers : 乗せたいギミックの秒（ジョブ別メモ用） */
+const BUFFS = [
+  /* ---- ナイト ---- */
+  {job:'pld', type:'mit', name:'パッセ', val:'15%',
+   t:2, dur:4, covers:[4], memo:'移動で解除'},
+  {job:'pld', type:'heal', name:'ディバイン', t:23},
+
+  /* ---- 暗黒騎士 ---- */
+  {job:'drk', type:'mit', name:'ミッショ|ナリー', val:'10%',
+   t:22, dur:15, covers:[26,34]},
+
+  /* ---- 占星術師 ---- */
+  {job:'ast', type:'mit', name:'運命の輪', val:'10%',
+   t:3, covers:[4,11],
+   para:[{dur:10, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  {job:'ast', type:'heal', name:'ホロスコ|＋コンヘリ',
+   t:5, dur:15, dash:true, covers:[11,19]},
+  {job:'ast', type:'heal', name:'クラウン', t:9},
+  {job:'ast', type:'heal', name:'星天対抗', t:17, dur:15, dash:true},
+  {job:'ast', type:'heal', name:'NS|＋コンヘリ',
+   t:18, dur:15, dash:true, covers:[19,26]},
+  {job:'ast', type:'mit',  name:'サンサイン', val:'10%',
+   t:22, dur:15, covers:[26,34]},
+  {job:'ast', type:'heal', name:'NS|＋コンヘリ',
+   t:27, dur:15, dash:true, covers:[34]},
+  {job:'ast', type:'heal', name:'ホロスコ？', t:29},
+
+  /* ---- 学者 ---- */
+  {job:'sch', type:'heal', name:'光の囁き',
+   t:-1, dur:21, dash:true, covers:[4,11,19]},
+  /* 陣は表記は15秒だが、軽減は実測で3秒長く18秒続く。軽減とHotで2本引く */
+  {job:'sch', type:'mit',  name:'陣', val:'10%',
+   t:3, covers:[4,11,19],
+   para:[{dur:18, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  {job:'sch', type:'mit',  name:'陣', val:'10%',
+   t:33, covers:[34],
+   para:[{dur:18, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  {job:'sch', type:'heal', name:'意気',       t:6},
+  {job:'sch', type:'heal', name:'不屈',       t:9},
+  {job:'sch', type:'heal', name:'意気',       t:16},
+  {job:'sch', type:'heal', name:'フェイブレ', t:17},
+  {job:'sch', type:'heal', name:'コンソレ',   t:21},
+  {job:'sch', type:'heal', name:'意気',       t:23},
+  {job:'sch', type:'heal', name:'意気',       t:27},
+  {job:'sch', type:'heal', name:'コンソレ',   t:29},
+
+  /* ---- 踊り子 ---- */
+  {job:'dnc', type:'mit',  name:'サンバ', val:'15%',
+   t:9, dur:15, covers:[11,19]},
+  {job:'dnc', type:'heal', name:'ワルツ', t:23},
+
+  /* ---- 赤魔道士 ---- */
+  {job:'rdm', type:'mit',  name:'バマジク', val:'10%',
+   t:18, dur:10, covers:[19,26], memo:'回復up5%'}
+];
+
+const TODOS = [
+  '陣はリキャスト30秒。1本目 0:03 → 2本目 0:33 でちょうど回るので、1本目が遅れると3回目に間に合わない',
+  'ヒール（意気・不屈・コンソレ等）の細かい秒数は区間内での仮置き。実際の詠唱順で調整',
+  'ミッショナリー・サンサインは 0:22 使用で 0:37 まで。グラクロ3回目（0:34）に間に合うが余裕は3秒',
+  'バマジクは 0:18 使用で 0:28 まで。グラクロ2回目とほのお・つなみ2回目の両方に乗るが、0:19 直前の使用が前提'
+];
+
+/* =========================================================================
+   描画
+   ========================================================================= */
+
+const AXIS_H = (T1 - T0) * PPS;
+const LANE_X0 = 3;   /* 列の左端から1本目の線までの余白 */
+const LANE_W  = 3;   /* 線どうしの間隔 */
+const GUT_PAD = 2;   /* 線とチップの間の余白 */
+const BAND_PAD = 2;  /* ギミックの線とチップの間の余白 */
+const CHIP_GAP = 2;  /* チップどうしの間隔 */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const y   = t => (t - T0) * PPS;
+const mmss = t => (t < -0.001 ? '-0:' : '0:') + String(Math.abs(Math.round(t))).padStart(2,'0');
+const plain = s => String(s).replace('|','');
+
+/* --- バフを「帯」へ展開（para は同じ秒から並行して複数本） --- */
+BUFFS.forEach(b=>{
+  let raw;
+  if(b.para)     raw = b.para.map(s=>({t:b.t, dur:s.dur, type:s.type||b.type, dash:!!s.dash}));
+  else if(b.dur) raw = [{t:b.t, dur:b.dur, type:b.type, dash:!!b.dash}];
+  else           raw = [];                     /* 単発＝チップのみ */
+  raw.forEach(o=>{
+    o.clip = (o.t + o.dur) > T1 + 0.01;        /* 軸の外は切って先細りに */
+    o.draw = Math.min(o.t + o.dur, T1) - o.t;
+  });
+  b._bars = raw;
+  b._end  = raw.length ? Math.max.apply(null, raw.map(o=>o.t + o.dur)) : b.t;
+});
+
+/* --- 帯どうしが時間的に重なる場合はレーンを横にずらす --- */
+const laneCount = {};
+JOBS.forEach(j=>{
+  const items = [];
+  BUFFS.filter(b=>b.job===j.id).forEach(b=>{
+    b._bars.forEach(o=>items.push({t:o.t, end:o.t + o.draw, ref:o}));
+  });
+  items.sort((x,z)=>x.t - z.t || x.end - z.end);
+  const laneEnd = [];
+  items.forEach(it=>{
+    let L = 0;
+    while(L < laneEnd.length && laneEnd[L] > it.t) L++;
+    laneEnd[L] = it.end;
+    it.ref._lane = L;
+  });
+  laneCount[j.id] = Math.max(1, laneEnd.length);
+});
+const gutter = id => LANE_X0 + (laneCount[id] - 1) * LANE_W + 2;
+const laneX  = n  => LANE_X0 + n * LANE_W;
+
+/* --- チップを収める「帯」。区切りはダメージが入る線（gc / ht）だけ --- */
+const HARD = EVENTS.filter(e=>e.tone !== 'nazo');
+const BANDS = {};
+BANDS[-1] = {top: BAND_PAD, bottom: y(HARD[0].t) - BAND_PAD};
+HARD.forEach((e,i)=>{
+  BANDS[i] = {
+    top:    y(e.t) + BAND_PAD,
+    bottom: (i + 1 < HARD.length ? y(HARD[i+1].t) : AXIS_H) - BAND_PAD
+  };
+});
+function bandOf(t){
+  let k = -1;
+  for(let i = 0; i < HARD.length; i++) if(t >= HARD[i].t - 0.001) k = i;
+  return k;
+}
+
+function buffHTML(b){
+  let h = '';
+
+  b._bars.forEach(o=>{
+    const cls = 'tbar cap ' + o.type + (o.dash?' dash':'') + (o.clip ? ' clip' : ' arrow');
+    h += '<div class="'+cls+'" style="top:'+y(o.t)+'px;height:'+(o.draw*PPS)+'px;left:'+laneX(o._lane)+'px"'
+      +  ' title="'+esc(plain(b.name))+'（'+(o.type==='mit'?'軽減':'Hot')+'）：'+mmss(o.t)+'〜'+mmss(o.t+o.dur)+'"></div>';
+  });
+
+  const nm = esc(b.name).split('|').join('<br>');
+  h += '<div class="tchip '+b.type+'" data-top="'+y(b.t)+'" data-band="'+bandOf(b.t)+'"'
+    +  ' style="top:'+y(b.t)+'px;left:'+(gutter(b.job)+GUT_PAD)+'px"'
+    +  ' title="'+esc(plain(b.name))+'：'+mmss(b.t)+'">'
+    +  (b._bars.length ? '<span class="conn"><i></i></span>' : '')
+    +  '<span class="nm">'+nm+'</span>'
+    +  (b.val ? '<span class="vl">'+esc(b.val)+'</span>' : '')
+    +  '</div>';
+  return h;
+}
+
+function render(){
+  const tl = document.getElementById('tl');
+  tl.style.setProperty('--axish', AXIS_H + 'px');
+  let h = '';
+
+  /* --- 1段目：ヘッダ（ジョブ名は略称） --- */
+  h += '<div class="hc corner" style="grid-column:1;grid-row:1">時刻</div>';
+  JOBS.forEach((j,i)=>{
+    h += '<div class="hc '+j.id+'" data-job="'+j.id+'" title="'+esc(j.name)+'"'
+      +  ' style="grid-column:'+(i+2)+';grid-row:1">'+esc(j.short)+'</div>';
+  });
+
+  /* --- 2段目：開幕バンド（時間軸の外） --- */
+  h += '<div class="ob lead" style="grid-column:1;grid-row:2">'
+    +  '<span class="olab">'+esc(OPENING.time)+' '+esc(OPENING.name)+'</span></div>';
+  JOBS.forEach((j,i)=>{
+    const mine = OPENING.items.filter(x=>x.job===j.id);
+    h += '<div class="ob" data-job="'+j.id+'" style="grid-column:'+(i+2)+';grid-row:2">'
+      +  mine.map(x=>'<span class="on" title="'+esc(x.name)+'">'+esc(x.name)+'</span>').join('')
+      +  '</div>';
+  });
+
+  /* --- 3段目：5秒ごとの薄い線 --- */
+  let g = '';
+  for(let t = Math.ceil(T0/5)*5; t <= T1; t += 5) g += '<div class="gl5" style="top:'+y(t)+'px"></div>';
+  h += '<div class="gridlines" aria-hidden="true">'+g+'</div>';
+
+  /* --- 3段目：時刻列（左端） --- */
+  h += '<div class="tcol ruler" style="grid-column:1;grid-row:3"></div>';
+
+  /* --- 3段目：ジョブ列 --- */
+  JOBS.forEach((j,i)=>{
+    h += '<div class="tcol" id="col-'+j.id+'" data-job="'+j.id+'"'
+      +  ' style="grid-column:'+(i+2)+';grid-row:3">'
+      +  BUFFS.filter(b=>b.job===j.id).map(buffHTML).join('')
+      +  '</div>';
+  });
+
+  /* --- 3段目：ギミック発動ライン（全列をまたぐ） --- */
+  let gl = '';
+  EVENTS.forEach(e=>{
+    const rate = e.mit ? e.mit.join(',') + '%' : '';
+    gl += '<div class="gline '+e.tone+'" style="top:'+y(e.t)+'px">'
+       +    '<div class="gtop"><span class="gname">'
+       +      '<span class="gt">'+esc(mmss(e.t))+'</span>'
+       +      '<span class="gn">'+esc(e.name)+'</span></span></div>'
+       +    (rate ? '<div class="gbot"><span class="grate">'+esc(rate)+'</span></div>' : '')
+       +  '</div>';
+  });
+  h += '<div class="glines">'+gl+'</div>';
+
+  tl.innerHTML = h;
+}
+
+/* チップをダメージ線と線の間（帯）に収める */
+function relayout(){
+  JOBS.forEach(j=>{
+    const col = document.getElementById('col-'+j.id);
+    if(!col || col.classList.contains('off')) return;
+
+    const byBand = {};
+    Array.prototype.slice.call(col.querySelectorAll('.tchip')).forEach(c=>{
+      const k = c.dataset.band;
+      (byBand[k] = byBand[k] || []).push(c);
+    });
+
+    Object.keys(byBand).forEach(k=>{
+      const band = BANDS[+k];
+      if(!band) return;
+      const list = byBand[k].sort((a,b)=>(+a.dataset.top) - (+b.dataset.top));
+      const hs   = list.map(c=>c.offsetHeight);
+
+      const tops = [];
+      let cur = band.top;
+      list.forEach((c,i)=>{
+        const top = Math.max(+c.dataset.top, cur);
+        tops.push(top);
+        cur = top + hs[i] + CHIP_GAP;
+      });
+      const over = (cur - CHIP_GAP) - band.bottom;
+      if(over > 0){
+        const shift = Math.min(over, tops[0] - band.top);
+        for(let i = 0; i < tops.length; i++) tops[i] -= shift;
+      }
+
+      list.forEach((c,i)=>{
+        c.style.top = tops[i] + 'px';
+        const delta = (+c.dataset.top) - tops[i];
+        const a  = Math.min(5, delta);
+        const b2 = Math.max(5, delta);
+        c.style.setProperty('--ct', (a - 5) + 'px');
+        c.style.setProperty('--ch', (b2 - a) + 'px');
+      });
+    });
+  });
+}
+
+function renderCards(){
+  document.getElementById('cards').innerHTML = JOBS.map(j=>{
+    const open = OPENING.items.filter(x=>x.job===j.id);
+    const list = BUFFS.filter(b=>b.job===j.id).sort((a,b)=>a.t-b.t);
+    let li = open.map(x=>'<li>▲ <b>'+esc(x.name)+'</b><br><span class="wh">開幕</span></li>');
+    li = li.concat(list.map(b=>{
+      const when = b._bars.length ? mmss(b.t)+'〜'+mmss(b._end) : mmss(b.t);
+      const cov  = b.covers ? ' → ' + b.covers.map(t=>mmss(t)).join('・') : '';
+      const hot  = b._bars.some(o=>o.type==='heal') ? '<span class="hot">Hot</span>' : '';
+      return '<li>'+(b.type==='mit'?'▲':'●')+' <b>'+esc(plain(b.name))+'</b>'
+           + (b.val  ? '<span class="vl">'+esc(b.val)+' 軽減</span>' : '')
+           + hot
+           + (b.memo ? '<span class="mo">'+esc(b.memo)+'</span>' : '')
+           + '<br><span class="wh">'+esc(when + cov)+'</span></li>';
+    }));
+    const body = li.length ? '<ul>'+li.join('')+'</ul>' : '<p class="empty">未確定</p>';
+    return '<div class="card" data-job="'+j.id+'"><h3 class="'+j.id+'">'+esc(j.name)+'</h3>'+body+'</div>';
+  }).join('');
+}
+
+function renderTodo(){
+  document.getElementById('todo').innerHTML =
+    '<p>PT内で詰める項目です。</p><ul>'
+    + TODOS.map(t=>'<li>'+esc(t)+'</li>').join('') + '</ul>';
+}
+
+/* ---- 表示ジョブの絞り込み ---- */
+const visible = new Set(JOBS.map(j=>j.id));
+function applyVisibility(){
+  const tl = document.getElementById('tl');
+  JOBS.forEach((j,i)=>{
+    const on = visible.has(j.id);
+    tl.style.setProperty('--w'+(i+1), on ? 'var(--jobw)' : '0px');
+    document.querySelectorAll('[data-job="'+j.id+'"]').forEach(el=>el.classList.toggle('off', !on));
+    const b = document.getElementById('btn-'+j.id);
+    if(b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  relayout();
+}
+function renderControls(){
+  const el = document.getElementById('ctrl');
+  JOBS.forEach(j=>{
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'jbtn '+j.id; b.id = 'btn-'+j.id;
+    b.innerHTML = '<span class="jn-l">'+esc(j.name)+'</span>'
+                + '<span class="jn-s">'+esc(j.short)+'</span>';
+    b.setAttribute('aria-label', j.name);
+    b.setAttribute('aria-pressed','true');
+    b.addEventListener('click', ()=>{
+      if(visible.has(j.id)){
+        if(visible.size === 1) return;
+        visible.delete(j.id);
+      } else {
+        visible.add(j.id);
+      }
+      applyVisibility();
+    });
+    el.appendChild(b);
+  });
+  const all = document.createElement('button');
+  all.type = 'button'; all.className = 'jbtn all'; all.textContent = '全ジョブ表示';
+  all.addEventListener('click', ()=>{ JOBS.forEach(j=>visible.add(j.id)); applyVisibility(); });
+  el.appendChild(all);
+}
+
+render();
+renderCards();
+renderTodo();
+renderControls();
+applyVisibility();
+
+let rt;
+window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(relayout, 120); });
+</script>
+</body>
+</html>
