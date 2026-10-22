@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1a">
+<title>絶ケフカ P4 軽減・ヒールタイムライン</title>
+<style>
+:root{
+  --bg:#0a0f1a; --panel:#111a2b; --panel2:#0d1524; --head:#16233a; --ev:#131f33;
+  --line:#2a3b56; --line2:#1e2d44; --grid:#1a2742;
+  --txt:#e9f0f9; --dim:#9fb0c6; --gold:#f5c96a;
+  --mit:#34d399; --heal:#60a5fa; --warn:#fbbf24;
+  --pld:#f3d57a; --drk:#c5aaff; --ast:#8ec9ff; --sch:#7fe3b5; --dnc:#ff9ed0; --rdm:#ffab8e;
+  --gc:#a78bfa;  --ht:#f1686a;  --nz:#7d8da6;
+  --evw:176px; --axish:714px;
+  /* ジョブ列は可変幅。画面幅に合わせて6列が収まるように伸縮する */
+  --jobw:minmax(112px,1fr);
+  --w1:var(--jobw); --w2:var(--jobw); --w3:var(--jobw);
+  --w4:var(--jobw); --w5:var(--jobw); --w6:var(--jobw);
+  --panelh:78vh;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--txt);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+
+header{padding:18px 16px 16px;background:linear-gradient(135deg,#17294a 0%,#0d1524 72%);border-bottom:1px solid var(--line)}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;color:var(--gold);font-weight:800}
+h1{font-size:clamp(1.3rem,4.4vw,2rem);margin:6px 0 4px}
+.sub{color:var(--dim);font-size:.8rem}
+main{max-width:1700px;margin:0 auto;padding:12px 12px 32px}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin:4px 0 12px}
+.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:11px;padding:10px 12px;color:#ffe9ad;font-size:.84rem}
+.note b{display:block;color:#fff3c9;font-size:.78rem;letter-spacing:.04em;margin-bottom:3px}
+
+.bar-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:4px 10px;font-size:.73rem;color:var(--dim);white-space:nowrap}
+.pill .sw{display:inline-block;width:9px;height:9px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+.ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}
+.ctrl .lbl{font-size:.73rem;color:var(--dim);font-weight:700;margin-right:2px}
+.jbtn{font:inherit;font-size:.78rem;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--dim);border-radius:9px;padding:6px 11px;line-height:1}
+.jbtn[aria-pressed="true"]{background:#1b2a44;border-color:currentColor}
+.jbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.jbtn.all{color:var(--gold)}
+.jbtn.pld[aria-pressed="true"]{color:var(--pld)} .jbtn.drk[aria-pressed="true"]{color:var(--drk)}
+.jbtn.ast[aria-pressed="true"]{color:var(--ast)} .jbtn.sch[aria-pressed="true"]{color:var(--sch)}
+.jbtn.dnc[aria-pressed="true"]{color:var(--dnc)} .jbtn.rdm[aria-pressed="true"]{color:var(--rdm)}
+
+h2{font-size:1rem;margin:20px 0 8px}
+h2 .hint{font-weight:400;font-size:.74rem;color:var(--dim);margin-left:8px}
+
+/* ================= タイムライン本体 ================= */
+.scroller{
+  border:1px solid var(--line);border-radius:13px;background:var(--panel);
+  overflow:auto;max-height:var(--panelh);
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.tl{
+  display:grid;
+  grid-template-columns:var(--evw) var(--w1) var(--w2) var(--w3) var(--w4) var(--w5) var(--w6);
+  grid-template-rows:auto auto var(--axish);
+  width:100%;
+}
+.off{display:none}
+
+/* ヘッダ */
+.hc{
+  position:sticky;top:0;z-index:5;background:var(--head);
+  text-align:center;font-size:.82rem;font-weight:800;padding:10px 8px;
+  border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
+}
+.hc.corner{left:0;z-index:6}
+.hc .jn-s{display:none}
+
+/* 開幕バンド（時間軸の外） */
+.ob{
+  padding:9px 10px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
+  background:#1b1809;min-width:0;overflow-wrap:anywhere;
+}
+.ob.lead{position:sticky;left:0;z-index:4;background:#211d0d;border-left:3px solid var(--gold);border-right:1px solid var(--line)}
+.ob .olab{display:inline-block;background:#3a3112;border:1px solid #7a6420;border-radius:6px;padding:1px 7px;font-size:.78rem;font-weight:800;color:var(--gold);white-space:nowrap}
+.ob .on{display:block;font-weight:800;font-size:.8rem;color:#ffe9ad}
+
+/* 時間軸の列 */
+.tcol{position:relative;z-index:1;border-right:1px solid var(--line2);min-width:0}
+.tcol.ruler{
+  position:sticky;left:0;z-index:3;background:var(--ev);
+  border-right:1px solid var(--line);border-left:3px solid var(--line);
+}
+
+/* 5秒ごとの薄い横線 */
+.gridlines{grid-column:1 / -1;grid-row:3;position:relative;z-index:0;pointer-events:none}
+.gl5{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--grid)}
+
+/* ギミック発動ライン */
+.glines{grid-column:1 / -1;grid-row:3;position:relative;z-index:4;pointer-events:none}
+/* 線とラベルの色はトーンごとに color で決め、border とラベル枠が currentColor で追従する */
+.gline{position:absolute;left:0;right:0;height:0;border-top:2px solid currentColor}
+.gline.gc{color:var(--gc)}
+.gline.ht{color:var(--ht)}
+.gline.nazo{color:var(--nz);border-top-width:1px;border-top-style:dashed}
+/* 時刻＋名前は線の上、軽減率は線の下。どちらも左端の時刻列の幅に収めて
+   ジョブ列のスキル枠にかぶらないようにする */
+.gtop{position:absolute;left:0;right:0;bottom:4px}
+.gbot{position:absolute;left:0;right:0;top:5px}
+.gname,.grate{
+  position:sticky;left:8px;width:max-content;
+  max-width:calc(var(--evw) - 16px);overflow:hidden;
+  background:#0e1726;border:1px solid currentColor;
+}
+.gname{
+  display:block;white-space:nowrap;line-height:1.3;
+  font-size:.73rem;font-weight:800;padding:1px 6px;border-radius:7px;
+}
+.gline.nazo .gname{font-size:.71rem;font-weight:700}
+.gname .gt{font-weight:900;margin-right:5px;color:var(--gold)}
+/* 軽減率・回復量のラベル。前後のイベント名とぶつからないよう小さめに */
+.grate{display:flex;gap:3px;align-items:center;white-space:nowrap;padding:0 4px;border-radius:7px;line-height:1.25}
+.grate + .grate{margin-top:1px}
+.grate .rk{font-size:.58rem;color:var(--dim);font-weight:800}
+.grate .rv{font-size:.64rem;font-weight:800;border-radius:4px;padding:0 3px;background:#3a2d0c;color:#ffd886;border:1px solid #7b5f1b}
+.grate .rk.hl{color:#9ccbff}
+.grate .rv.hl{background:#0f2440;color:#cfe6ff;border-color:#2a5f93}
+
+/* バフの帯：細い線で、始点に横棒・終点に▼。Hot（青点線）はさらに細く */
+.tbar{position:absolute;width:4px;border-radius:3px;background:currentColor}
+.tbar.mit{color:var(--mit)}
+.tbar.heal{color:var(--heal);width:2px}
+.tbar.dash{background:repeating-linear-gradient(180deg,currentColor 0 4px,transparent 4px 9px)}
+.tbar.cap::before{content:"";position:absolute;top:-4px;left:-3px;right:-3px;height:3px;border-radius:2px;background:currentColor}
+.tbar.heal.cap::before{top:-3px;height:2px}
+.tbar.arrow::after{content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid currentColor}
+.tbar.heal.arrow::after{bottom:-6px;border-left-width:4px;border-right-width:4px;border-top-width:6px}
+/* 軸の終わりで切れている帯は▼を出さず、先細りで「まだ続く」ことを示す */
+.tbar.clip::after{display:none}
+.tbar.clip{
+  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 20px),transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 20px),transparent 100%);
+}
+
+/* バフ名のチップ。ギミックの線をまたがないよう、線と線の間に収める */
+.tchip{
+  position:absolute;right:4px;border:1px solid;border-radius:8px;padding:3px 6px;
+  font-size:.73rem;line-height:1.28;
+}
+.tchip.mit{background:#0e2b23;border-color:#1f6b53;--cc:var(--mit)}
+.tchip.heal{background:#0f2440;border-color:#265d93;--cc:var(--heal)}
+.tchip .mk{font-weight:900;margin-right:3px;color:var(--cc)}
+/* 名前と数値は語の途中で折り返さない（「軽/減」のような分断を防ぐ） */
+.tchip .nm{font-weight:800;white-space:nowrap}
+.tchip .vl{display:inline-block;white-space:nowrap;font-size:.66rem;font-weight:800;color:var(--warn);margin-left:5px}
+.tchip.heal .vl{color:#9ccbff}
+.tchip .nt{display:block;font-size:.67rem;color:var(--dim);margin-top:1px}
+/* 実際の使用秒とチップ位置がずれた分をつなぐ引き出し線 */
+.conn{position:absolute;left:-6px;top:10px;width:6px;height:1px;background:var(--cc);opacity:.5}
+.conn i{position:absolute;left:0;top:var(--ct,0px);width:1px;height:var(--ch,0px);background:var(--cc)}
+
+.pld{color:var(--pld)} .drk{color:var(--drk)} .ast{color:var(--ast)}
+.sch{color:var(--sch)} .dnc{color:var(--dnc)} .rdm{color:var(--rdm)}
+.scrollhint{display:none}
+
+/* ================= 下部 ================= */
+/* ジョブ別メモは表の列と同じ幅割りにして、各ジョブの真下に来るようにする */
+.cards{
+  display:grid;
+  grid-template-columns:var(--evw) var(--w1) var(--w2) var(--w3) var(--w4) var(--w5) var(--w6);
+  gap:7px;align-items:start;
+}
+.cspacer{min-width:0}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 9px;min-width:0}
+.card h3{margin:0 0 5px;font-size:.82rem}
+.card ul{margin:0;padding-left:.95em}
+.card li{font-size:.74rem;line-height:1.3;margin:5px 0;color:#d7e2f0;overflow-wrap:anywhere}
+/* 軽減率・Hot などの補足は小さく。Hot は青字 */
+.card li .vl{color:var(--warn);font-weight:800;font-size:.66rem;margin-left:4px;white-space:nowrap}
+.card li .hot{color:#8fc8ff;font-weight:800;font-size:.66rem;margin-left:4px}
+.card li .wh{color:var(--dim);font-size:.67rem}
+.card .empty{font-size:.74rem;color:var(--dim);margin:0}
+.todo{border:1px solid #6d5a2c;background:#1c1810;border-radius:11px;padding:11px 13px}
+.todo p{margin:0;font-size:.8rem;color:#ffe9ad}
+.todo ul{margin:7px 0 0;padding-left:1.1em}
+.todo li{font-size:.82rem;margin:4px 0;color:#ffe9ad}
+footer{margin:22px 0 0;color:var(--dim);font-size:.76rem;line-height:1.7}
+footer b{color:#e9f0f9}
+
+@media (max-width:760px){
+  /* スマホは潰れるので固定幅に戻し、横スクロールで見る */
+  :root{--evw:158px;--jobw:166px;--panelh:72vh}
+  .tl{width:max-content;min-width:100%}
+  header{padding:14px 12px}
+  main{padding:10px 10px 28px}
+  .note{font-size:.8rem}
+  .hc .jn-l{display:none}
+  .hc .jn-s{display:inline;font-size:.95rem}
+  .tchip{font-size:.72rem;padding:3px 6px}
+  .gname,.grate{left:5px;max-width:calc(var(--evw) - 10px)}
+  .gname{font-size:.71rem;padding:1px 5px}
+  .grate{gap:2px;padding:0 4px}
+  .grate .rv{font-size:.63rem;padding:0 3px}
+  .grate .rk{font-size:.57rem}
+  .scrollhint{display:block;color:var(--dim);font-size:.72rem;padding:7px 10px;background:#0e1727;border-bottom:1px solid var(--line2);position:sticky;left:0}
+  /* 表が横スクロールするので、カードは列に合わせず素直に折り返す */
+  .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .cspacer{display:none}
+}
+
+@media print{
+  :root{--panelh:none;--grid:#e2e2e2}
+  body{background:#fff;color:#111}
+  header{background:#fff;border-color:#bbb}
+  .eyebrow{color:#8a6a10}
+  .sub,footer,.card .empty,.card li .wh{color:#555}
+  .note,.todo,.todo p,.todo li{background:#fffbe9;color:#3a2f06;border-color:#c9b36a}
+  .note b{color:#3a2f06}
+  .scroller{max-height:none;overflow:visible;border-color:#999;background:#fff}
+  .ctrl,.scrollhint{display:none}
+  .hc{background:#eee;color:#111;position:static}
+  .tcol.ruler{background:#f6f6f6;position:static}
+  .ob{background:#fffbe9;color:#3a2f06}
+  .ob.lead{background:#fdf3cd;position:static}
+  .ob .on,.ob .olab{color:#6b5407}
+  .gname,.grate{position:static;max-width:none;background:#fff}
+  .grate .rv{background:#fff4d6;color:#7a5600;border-color:#c9a227}
+  .grate .rv.hl{background:#e9f1fc;color:#13456f;border-color:#6d9cc9}
+  .grate .rk{color:#555}
+  .tchip.mit{background:#eafaf2;border-color:#3f9c78;color:#13402f}
+  .tchip.heal{background:#eaf2fd;border-color:#3f78b5;color:#12304f}
+  .tchip .vl,.tchip.heal .vl{color:#8a5a00}
+  .card li .vl{color:#8a5a00}
+  .card li .hot{color:#1a5a9c}
+  .tchip .nt{color:#555}
+  .card{background:#fff;border-color:#bbb}
+  .card li{color:#222}
+  .card li .wh{color:#555}
+  footer b{color:#111}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">FINAL FANTASY XIV · 絶ケフカ</div>
+  <h1>フェーズ4｜軽減・ヒールタイムライン</h1>
+  <div class="sub">縦軸＝経過秒（等分）／横軸＝ジョブ。帯の長さがそのままバフの効果時間です。</div>
+</header>
+
+<main>
+  <div class="notes">
+    <div class="note"><b>開幕</b>ナイトのランパ空焚きの上に鼓舞展</div>
+    <div class="note"><b>軽減注意点</b>10秒なら2か所に乗るので最大限のるように</div>
+  </div>
+
+  <div class="bar-row">
+    <span class="pill">▲ 軽減</span>
+    <span class="pill">● ヒール</span>
+    <span class="pill"><span class="sw" style="background:var(--mit)"></span>緑実線＝軽減が乗る範囲</span>
+    <span class="pill"><span class="sw" style="background:repeating-linear-gradient(180deg,var(--heal) 0 3px,transparent 3px 5px)"></span>青点線＝Hotの乗る範囲</span>
+  </div>
+
+  <h2>タイムライン<span class="hint">ジョブ名のボタンで表示を絞り込めます</span></h2>
+
+  <div class="ctrl" id="ctrl"><span class="lbl">表示ジョブ</span></div>
+
+  <div class="scroller">
+    <div class="scrollhint">← 横にスクロールしてジョブごとの担当を確認 →</div>
+    <div class="tl" id="tl" role="group" aria-label="絶ケフカP4 軽減・ヒールタイムライン（縦軸＝秒、横軸＝ジョブ）"></div>
+  </div>
+
+  <h2>ジョブ別メモ</h2>
+  <div class="cards" id="cards"></div>
+
+  <h2>要確認リスト</h2>
+  <div class="todo" id="todo"></div>
+
+  <footer>
+    ・縦軸は<b>1秒＝等間隔</b>。帯の長さ＝効果時間、帯の位置＝使用タイミングです。<br>
+    ・「+5%」は<b>回復量アップ</b>（バマジクの受ける回復効果上昇）で、被ダメージ軽減率ではありません。<br>
+    ・効果時間は公式ジョブガイド（<a href="https://jp.finalfantasyxiv.com/jobguide/" style="color:var(--ast)">jp.finalfantasyxiv.com/jobguide</a>）の値です。
+  </footer>
+</main>
+
+<script>
+/* =========================================================================
+   データ定義：ここだけ直せば表・カード・要確認リストがすべて更新されます
+   ========================================================================= */
+
+const PPS = 17;      /* 1秒あたりのピクセル数。タイムラインの縦の縮尺 */
+const T0  = -4;      /* 軸の開始秒。0:00 より前に置くバフのための助走 */
+const T1  = 38;      /* 軸の終了秒。グラクロ3回目までを見るので、その先は切る */
+
+const JOBS = [
+  {id:'pld', name:'ナイト',   short:'ナ'},
+  {id:'drk', name:'暗黒騎士', short:'暗'},
+  {id:'ast', name:'占星術師', short:'占'},
+  {id:'sch', name:'学者',     short:'学'},
+  {id:'dnc', name:'踊り子',   short:'踊'},
+  {id:'rdm', name:'赤魔道士', short:'赤'}
+];
+
+/* ギミックの発動時刻。tone: gc=グラクロ(紫) / ht=ほのお・つなみ(赤) / nazo=なぞなぞ(灰) */
+const EVENTS = [
+  {t:0,  tone:'nazo', name:'なぞなぞ発動'},
+  {t:4,  tone:'gc',   name:'グラクロ 1回目', mit:['15%','10%','10%']},
+  {t:11, tone:'ht',   name:'ほのお・つなみ', mit:['10%','10%','15%']},
+  {t:15, tone:'nazo', name:'なぞなぞ発動'},
+  {t:19, tone:'gc',   name:'グラクロ 2回目', mit:['10%','10%','15%'], heal:['+5%']},
+  {t:26, tone:'ht',   name:'ほのお・つなみ', mit:['10%','10%','10%'], heal:['+5%']},
+  {t:30, tone:'nazo', name:'なぞなぞ発動'},
+  {t:34, tone:'gc',   name:'グラクロ 3回目', mit:['10%','10%','10%']}   /* 陣・ミッショナリー・サンサイン */
+];
+
+/* 時間軸の外（開幕） */
+const OPENING = {
+  time:'-0:26', name:'開幕',
+  items:[
+    {job:'pld', type:'mit', name:'ランパ（空焚き）'},
+    {job:'sch', type:'mit', name:'鼓舞展開'}
+  ]
+};
+
+/* バフ
+   t     : 使用する秒
+   dur   : 効果が続く秒（省略すると単発＝点で表示）
+   para  : 軽減とHotのように効果時間が別のものを、同じ秒から並行して2本引く
+           [{dur, type, dash}]（type: mit=緑実線 / heal=青点線）
+   covers: 乗せたいギミックの秒（ジョブ別メモ用） */
+const BUFFS = [
+  /* ---- ナイト ---- */
+  {job:'pld', type:'mit', name:'パッセ', val:'15% 軽減',
+   t:2, dur:4, covers:[4], note:'移動で解除'},
+  /* グラクロ2回目 → ほのお・つなみ の間。バリア＋回復 */
+  {job:'pld', type:'heal', name:'ディバイン', t:23},
+
+  /* ---- 暗黒騎士 ---- */
+  {job:'drk', type:'mit', name:'ミッショナリー', val:'10% 軽減',
+   t:22, dur:15, covers:[26,34]},
+
+  /* ---- 占星術師 ---- */
+  {job:'ast', type:'mit', name:'運命の輪', val:'10% 軽減',
+   t:3, covers:[4,11],
+   para:[{dur:10, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  /* グラクロ1回目の発動直後に回復。コンヘリはHot15秒なので点線で引く */
+  {job:'ast', type:'heal', name:'ホロスコ＋コンヘリ',
+   t:5, dur:15, dash:true, covers:[11,19]},
+  {job:'ast', type:'heal', name:'クラウンレディ', t:9},
+  {job:'ast', type:'heal', name:'星天対抗', t:17, dur:15, dash:true},
+  /* グラクロ2回目の発動直前 */
+  {job:'ast', type:'heal', name:'NS＋コンヘリ',
+   t:18, dur:15, dash:true, covers:[19,26]},
+  {job:'ast', type:'mit',  name:'サンサイン', val:'10% 軽減',
+   t:22, dur:15, covers:[26,34]},
+  /* ほのお・つなみ2回目の後。NSは20秒続くので、ここのコンヘリにもバリアが乗る */
+  {job:'ast', type:'heal', name:'NS＋コンヘリ',
+   t:27, dur:15, dash:true, covers:[34]},
+  /* ほのお・つなみ2回目の後にホロスコープを発動（配置は仮） */
+  {job:'ast', type:'heal', name:'ホロスコ？', t:29},
+
+  /* ---- 学者 ---- */
+  /* 妖精の継続回復。なぞなぞ発動の少し前に置き、21秒でグラクロ2回目まで届かせる */
+  {job:'sch', type:'heal', name:'光の囁き',
+   t:-1, dur:21, dash:true, covers:[4,11,19]},
+  /* 陣は表記は15秒だが、軽減は実測で3秒長く18秒続く。軽減とHotで2本引く */
+  {job:'sch', type:'mit',  name:'陣', val:'10% 軽減',
+   t:3, covers:[4,11,19],
+   para:[{dur:18, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  /* 2本目。リキャスト30秒ちょうどで回し、グラクロ3回目の直前に設置 */
+  {job:'sch', type:'mit',  name:'陣', val:'10% 軽減',
+   t:33, covers:[34],
+   para:[{dur:18, type:'mit'}, {dur:15, type:'heal', dash:true}]},
+  /* グラクロ1回目 → ほのお・つなみ の間 */
+  {job:'sch', type:'heal', name:'意気',       t:6},
+  {job:'sch', type:'heal', name:'不屈',       t:9},
+  /* ほのお・つなみ → グラクロ2回目 の間 */
+  {job:'sch', type:'heal', name:'意気',       t:16},
+  {job:'sch', type:'heal', name:'フェイブレ', t:17},
+  /* グラクロ2回目 → ほのお・つなみ の間 */
+  {job:'sch', type:'heal', name:'コンソレ',   t:21},
+  {job:'sch', type:'heal', name:'意気',       t:23},
+  /* ほのお・つなみ2回目 の後 */
+  {job:'sch', type:'heal', name:'意気',       t:27},
+  {job:'sch', type:'heal', name:'コンソレ',   t:29},
+
+  /* ---- 踊り子 ---- */
+  {job:'dnc', type:'mit',  name:'サンバ', val:'15% 軽減',
+   t:9, dur:15, covers:[11,19]},
+  {job:'dnc', type:'heal', name:'ワルツ', t:23},
+
+  /* ---- 赤魔道士 ---- */
+  /* 10秒をグラクロ2回目とほのお・つなみ2回目の2か所に乗せる */
+  {job:'rdm', type:'mit',  name:'バマジク', val:'10% 軽減 ＋ 回復up5%',
+   t:18, dur:10, covers:[19,26]}
+];
+
+const TODOS = [
+  '陣はリキャスト30秒。1本目 0:03 → 2本目 0:33 でちょうど回るので、1本目が遅れると3回目に間に合わない',
+  'ヒール（意気・不屈・コンソレ等）の細かい秒数は区間内での仮置き。実際の詠唱順で調整',
+  'ミッショナリー・サンサインは 0:22 使用で 0:37 まで。グラクロ3回目（0:34）に間に合うが余裕は3秒',
+  'バマジクは 0:18 使用で 0:28 まで。グラクロ2回目とほのお・つなみ2回目の両方に乗るが、0:19 直前の使用が前提'
+];
+
+/* =========================================================================
+   描画
+   ========================================================================= */
+
+const AXIS_H = (T1 - T0) * PPS;
+const LANE_X0 = 4;   /* 列の左端から1本目の線までの余白 */
+const LANE_W  = 8;   /* 線どうしの間隔 */
+const GUT_PAD = 6;   /* 線とチップの間の余白 */
+const BAND_PAD = 6;  /* ギミックの線とチップの間の余白 */
+const CHIP_GAP = 5;  /* チップどうしの間隔 */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const y   = t => (t - T0) * PPS;
+const mmss = t => (t < -0.001 ? '-0:' : '0:') + String(Math.abs(Math.round(t))).padStart(2,'0');
+
+/* --- バフを「帯」へ展開（para は同じ秒から並行して複数本） --- */
+BUFFS.forEach(b=>{
+  let raw;
+  if(b.para)     raw = b.para.map(s=>({t:b.t, dur:s.dur, type:s.type||b.type, dash:!!s.dash}));
+  else if(b.dur) raw = [{t:b.t, dur:b.dur, type:b.type, dash:!!b.dash}];
+  else           raw = [];                     /* 単発＝点 */
+  /* 軸の終わり(T1)を越える帯は、そこで切って先細りにする */
+  raw.forEach(o=>{
+    o.clip = (o.t + o.dur) > T1 + 0.01;
+    o.draw = Math.min(o.t + o.dur, T1) - o.t;
+  });
+  b._bars = raw;
+  b._end  = raw.length ? Math.max.apply(null, raw.map(o=>o.t + o.dur)) : b.t;
+});
+
+/* --- 帯どうしが時間的に重なる場合はレーンを横にずらす（帯1本ごとに判定） --- */
+const laneCount = {};
+JOBS.forEach(j=>{
+  /* レーンは帯のあるバフだけが使う（単発はチップのみなので場所を取らない） */
+  const items = [];
+  BUFFS.filter(b=>b.job===j.id).forEach(b=>{
+    b._bars.forEach(o=>items.push({t:o.t, end:o.t + o.draw, ref:o}));
+  });
+  items.sort((x,z)=>x.t - z.t || x.end - z.end);
+  const laneEnd = [];
+  items.forEach(it=>{
+    let L = 0;
+    while(L < laneEnd.length && laneEnd[L] > it.t) L++;
+    laneEnd[L] = it.end;
+    it.ref._lane = L;
+  });
+  laneCount[j.id] = Math.max(1, laneEnd.length);
+});
+const gutter = id => LANE_X0 + (laneCount[id] - 1) * LANE_W + 4;
+const laneX  = n  => LANE_X0 + n * LANE_W;
+
+/* --- ギミックの線で区切られた「帯」。チップはこの中に収める。
+       -1 は最初のギミック（0:00）より前の助走区間 --- */
+const BANDS = {};
+BANDS[-1] = {top: BAND_PAD, bottom: y(EVENTS[0].t) - BAND_PAD};
+EVENTS.forEach((e,i)=>{
+  BANDS[i] = {
+    top:    y(e.t) + BAND_PAD,
+    bottom: (i + 1 < EVENTS.length ? y(EVENTS[i+1].t) : AXIS_H) - BAND_PAD
+  };
+});
+function bandOf(t){
+  let k = -1;
+  for(let i = 0; i < EVENTS.length; i++) if(t >= EVENTS[i].t - 0.001) k = i;
+  return k;
+}
+
+function buffHTML(b){
+  let h = '';
+
+  b._bars.forEach(o=>{
+    const cls = 'tbar cap ' + o.type + (o.dash?' dash':'')
+              + (o.clip ? ' clip' : ' arrow');
+    h += '<div class="'+cls+'" style="top:'+y(o.t)+'px;height:'+(o.draw*PPS)+'px;left:'+laneX(o._lane)+'px"'
+      +  ' title="'+esc(b.name)+'（'+(o.type==='mit'?'軽減':'Hot')+'）：'+mmss(o.t)+'〜'+mmss(o.t+o.dur)+'"></div>';
+  });
+
+  /* 名前チップ。実際の位置はギミックの線の間に収まるよう relayout() で決める。
+     単発スキルは帯も引き出し線も出さず、発動位置の横に名前だけ置く */
+  h += '<div class="tchip '+b.type+'" data-top="'+y(b.t)+'" data-band="'+bandOf(b.t)+'"'
+    +  ' style="top:'+y(b.t)+'px;left:'+(gutter(b.job)+GUT_PAD)+'px">'
+    +  (b._bars.length ? '<span class="conn"><i></i></span>' : '')
+    +  '<span class="mk">'+(b.type==='mit'?'▲':'●')+'</span><span class="nm">'+esc(b.name)+'</span>'
+    +  (b.val  ? '<span class="vl">'+esc(b.val)+'</span>'  : '')
+    +  (b.note ? '<span class="nt">'+esc(b.note)+'</span>' : '')
+    +  '</div>';
+  return h;
+}
+
+function render(){
+  const tl = document.getElementById('tl');
+  tl.style.setProperty('--axish', AXIS_H + 'px');
+  let h = '';
+
+  /* --- 1段目：ヘッダ --- */
+  h += '<div class="hc corner" style="grid-column:1;grid-row:1">時刻・イベント</div>';
+  JOBS.forEach((j,i)=>{
+    h += '<div class="hc '+j.id+'" data-job="'+j.id+'" style="grid-column:'+(i+2)+';grid-row:1">'
+      +  '<span class="jn-l">'+esc(j.name)+'</span><span class="jn-s">'+esc(j.short)+'</span></div>';
+  });
+
+  /* --- 2段目：開幕バンド（時刻なし） --- */
+  h += '<div class="ob lead" style="grid-column:1;grid-row:2">'
+    +  '<span class="olab">'+esc(OPENING.time)+'　'+esc(OPENING.name)+'</span></div>';
+  JOBS.forEach((j,i)=>{
+    const mine = OPENING.items.filter(x=>x.job===j.id);
+    h += '<div class="ob" data-job="'+j.id+'" style="grid-column:'+(i+2)+';grid-row:2">'
+      +  mine.map(x=>'<span class="on">'+(x.type==='mit'?'▲':'●')+' '+esc(x.name)+'</span>').join('')
+      +  '</div>';
+  });
+
+  /* --- 3段目：5秒ごとの薄い線 --- */
+  let g = '';
+  for(let t = Math.ceil(T0/5)*5; t <= T1; t += 5) g += '<div class="gl5" style="top:'+y(t)+'px"></div>';
+  h += '<div class="gridlines" aria-hidden="true">'+g+'</div>';
+
+  /* --- 3段目：時刻列（左端） --- */
+  h += '<div class="tcol ruler" style="grid-column:1;grid-row:3"></div>';
+
+  /* --- 3段目：ジョブ列 --- */
+  JOBS.forEach((j,i)=>{
+    h += '<div class="tcol" id="col-'+j.id+'" data-job="'+j.id+'"'
+      +  ' style="grid-column:'+(i+2)+';grid-row:3">'
+      +  BUFFS.filter(b=>b.job===j.id).map(buffHTML).join('')
+      +  '</div>';
+  });
+
+  /* --- 3段目：ギミック発動ライン（全列をまたぐ） --- */
+  let gl = '';
+  EVENTS.forEach(e=>{
+    /* 軽減と回復量は別の行にして、時刻列の幅に収める */
+    let rate = '';
+    if(e.mit)  rate += '<span class="grate"><span class="rk">軽減</span>'
+                    +  e.mit.map(v=>'<span class="rv">'+esc(v)+'</span>').join('')+'</span>';
+    if(e.heal) rate += '<span class="grate"><span class="rk hl">回復量</span>'
+                    +  e.heal.map(v=>'<span class="rv hl">'+esc(v)+'</span>').join('')+'</span>';
+    gl += '<div class="gline '+e.tone+'" style="top:'+y(e.t)+'px">'
+       +    '<div class="gtop"><span class="gname">'
+       +      '<span class="gt">'+esc(mmss(e.t))+'</span>'+esc(e.name)+'</span></div>'
+       +    (rate ? '<div class="gbot">'+rate+'</div>' : '')
+       +  '</div>';
+  });
+  h += '<div class="glines">'+gl+'</div>';
+
+  tl.innerHTML = h;
+}
+
+/* チップをギミックの線と線の間（帯）に収める。
+   帯に入りきるときは下寄せ（＝その攻撃の直前に見える位置）。
+   実際の使用秒とずれた分は引き出し線でつなぐ。 */
+function relayout(){
+  JOBS.forEach(j=>{
+    const col = document.getElementById('col-'+j.id);
+    if(!col || col.classList.contains('off')) return;
+
+    const byBand = {};
+    Array.prototype.slice.call(col.querySelectorAll('.tchip')).forEach(c=>{
+      const k = c.dataset.band;
+      (byBand[k] = byBand[k] || []).push(c);
+    });
+
+    Object.keys(byBand).forEach(k=>{
+      const band = BANDS[+k];
+      if(!band) return;
+      const list = byBand[k].sort((a,b)=>(+a.dataset.top) - (+b.dataset.top));
+      const hs   = list.map(c=>c.offsetHeight);
+
+      /* まずは発動秒そのままの位置に置き、ぶつかった分だけ下へ送る */
+      const tops = [];
+      let cur = band.top;
+      list.forEach((c,i)=>{
+        const top = Math.max(+c.dataset.top, cur);
+        tops.push(top);
+        cur = top + hs[i] + CHIP_GAP;
+      });
+      /* 帯の下端を越えたら、越えた分だけグループ全体を上へ戻す */
+      const over = (cur - CHIP_GAP) - band.bottom;
+      if(over > 0){
+        const shift = Math.min(over, tops[0] - band.top);
+        for(let i = 0; i < tops.length; i++) tops[i] -= shift;
+      }
+
+      list.forEach((c,i)=>{
+        c.style.top = tops[i] + 'px';
+        const delta = (+c.dataset.top) - tops[i];      /* 本来の秒位置が下なら正 */
+        const a  = Math.min(10, delta);
+        const b2 = Math.max(10, delta);
+        c.style.setProperty('--ct', (a - 10) + 'px');
+        c.style.setProperty('--ch', (b2 - a) + 'px');
+      });
+    });
+  });
+}
+
+function renderCards(){
+  const cards = JOBS.map(j=>{
+    const open = OPENING.items.filter(x=>x.job===j.id);
+    const list = BUFFS.filter(b=>b.job===j.id).sort((a,b)=>a.t-b.t);
+    let li = open.map(x=>'<li>'+(x.type==='mit'?'▲':'●')+' <b>'+esc(x.name)+'</b>'
+                        +'<br><span class="wh">開幕</span></li>');
+    li = li.concat(list.map(b=>{
+      const when = b._bars.length ? mmss(b.t)+'〜'+mmss(b._end) : mmss(b.t);
+      const cov  = b.covers ? ' → ' + b.covers.map(t=>mmss(t)).join('・') : '';
+      /* 継続回復の帯を持つものは Hot を青字で添える（表の中には出さない） */
+      const hot  = b._bars.some(o=>o.type==='heal') ? '<span class="hot">Hot</span>' : '';
+      return '<li>'+(b.type==='mit'?'▲':'●')+' <b>'+esc(b.name)+'</b>'
+           + (b.val ? '<span class="vl">'+esc(b.val)+'</span>' : '')
+           + hot
+           + '<br><span class="wh">'+esc(when + cov)+'</span></li>';
+    }));
+    const body = li.length ? '<ul>'+li.join('')+'</ul>' : '<p class="empty">未確定</p>';
+    return '<div class="card" data-job="'+j.id+'"><h3 class="'+j.id+'">'+esc(j.name)+'</h3>'+body+'</div>';
+  }).join('');
+  /* 1列目は時刻列ぶんの余白。これで各カードがジョブ列の真下に並ぶ */
+  document.getElementById('cards').innerHTML =
+    '<div class="cspacer" aria-hidden="true"></div>' + cards;
+}
+
+function renderTodo(){
+  document.getElementById('todo').innerHTML =
+    '<p>PT内で詰める項目です。</p><ul>'
+    + TODOS.map(t=>'<li>'+esc(t)+'</li>').join('') + '</ul>';
+}
+
+/* ---- 表示ジョブの絞り込み ---- */
+const visible = new Set(JOBS.map(j=>j.id));
+function applyVisibility(){
+  const tl = document.getElementById('tl');
+  const cards = document.getElementById('cards');
+  JOBS.forEach((j,i)=>{
+    const on = visible.has(j.id);
+    tl.style.setProperty('--w'+(i+1), on ? 'var(--jobw)' : '0px');
+    if(cards) cards.style.setProperty('--w'+(i+1), on ? 'var(--jobw)' : '0px');
+    document.querySelectorAll('[data-job="'+j.id+'"]').forEach(el=>el.classList.toggle('off', !on));
+    const b = document.getElementById('btn-'+j.id);
+    if(b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  relayout();
+}
+function renderControls(){
+  const el = document.getElementById('ctrl');
+  JOBS.forEach(j=>{
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'jbtn '+j.id; b.id = 'btn-'+j.id;
+    b.textContent = j.name; b.setAttribute('aria-pressed','true');
+    b.addEventListener('click', ()=>{
+      if(visible.has(j.id)){
+        if(visible.size === 1) return;
+        visible.delete(j.id);
+      } else {
+        visible.add(j.id);
+      }
+      applyVisibility();
+    });
+    el.appendChild(b);
+  });
+  const all = document.createElement('button');
+  all.type = 'button'; all.className = 'jbtn all'; all.textContent = '全ジョブ表示';
+  all.addEventListener('click', ()=>{ JOBS.forEach(j=>visible.add(j.id)); applyVisibility(); });
+  el.appendChild(all);
+}
+
+render();
+renderCards();
+renderTodo();
+renderControls();
+applyVisibility();
+
+let rt;
+window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(relayout, 120); });
+</script>
+</body>
+</html>
