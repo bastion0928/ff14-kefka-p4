@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a0f1a">
-<title>絶ケフカ P4 軽減・ヒールタイムライン（極小版）</title>
+<title>絶ケフカ P4 軽減・ヒールタイムライン</title>
 <style>
 :root{
   --bg:#0a0f1a; --panel:#111a2b; --panel2:#0d1524; --head:#16233a; --ev:#131f33;
@@ -13,8 +13,8 @@
   --mit:#34d399; --heal:#60a5fa; --warn:#fbbf24;
   --pld:#f3d57a; --drk:#c5aaff; --ast:#8ec9ff; --sch:#7fe3b5; --dnc:#ff9ed0; --rdm:#ffab8e;
   --gc:#a78bfa;  --ht:#f1686a;  --nz:#6f7f98;
-  --evw:68px; --axish:328px;
-  --jobw:minmax(60px,1fr);
+  --evw:76px; --axish:328px;
+  --jobw:minmax(78px,1fr);
   --w1:var(--jobw); --w2:var(--jobw); --w3:var(--jobw);
   --w4:var(--jobw); --w5:var(--jobw); --w6:var(--jobw);
 }
@@ -26,21 +26,21 @@ body{
   -webkit-text-size-adjust:100%;
 }
 
-header{padding:11px 11px 9px;background:linear-gradient(135deg,#17294a 0%,#0d1524 72%);border-bottom:1px solid var(--line)}
-.eyebrow{font-size:.64rem;letter-spacing:.14em;color:var(--gold);font-weight:800}
-h1{font-size:clamp(1.05rem,3.8vw,1.5rem);margin:4px 0}
-main{max-width:1700px;margin:0 auto;padding:8px 8px 24px}
+header{padding:12px 12px 10px;background:linear-gradient(135deg,#17294a 0%,#0d1524 72%);border-bottom:1px solid var(--line)}
+.eyebrow{font-size:.66rem;letter-spacing:.14em;color:var(--gold);font-weight:800}
+h1{font-size:clamp(1.1rem,4vw,1.6rem);margin:4px 0}
+main{max-width:1700px;margin:0 auto;padding:9px 9px 26px}
 
-.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px;margin:3px 0 6px}
-.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:8px;padding:4px 7px;color:#ffe9ad;font-size:.73rem;line-height:1.35}
-.note b{color:#fff3c9;font-size:.69rem;letter-spacing:.04em;margin-right:6px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px;margin:3px 0 7px}
+.note{border:1px solid #6d5a2c;background:#201c0f;border-radius:9px;padding:4px 8px;color:#ffe9ad;font-size:.76rem;line-height:1.35}
+.note b{color:#fff3c9;font-size:.72rem;letter-spacing:.04em;margin-right:6px}
 
-.bar-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 6px}
-.pill{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:2px 8px;font-size:.68rem;color:var(--dim);white-space:nowrap}
-.pill .sw{display:inline-block;width:8px;height:8px;border-radius:3px;vertical-align:-1px;margin-right:4px}
-.ctrl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 6px}
-.ctrl .lbl{font-size:.68rem;color:var(--dim);font-weight:700;margin-right:2px}
-.jbtn{font:inherit;font-size:.73rem;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--dim);border-radius:7px;padding:4px 9px;line-height:1}
+.bar-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:0 0 7px}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:3px 9px;font-size:.7rem;color:var(--dim);white-space:nowrap}
+.pill .sw{display:inline-block;width:9px;height:9px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+.ctrl{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:0 0 6px}
+.ctrl .lbl{font-size:.7rem;color:var(--dim);font-weight:700;margin-right:2px}
+.jbtn{font:inherit;font-size:.75rem;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--dim);border-radius:8px;padding:5px 10px;line-height:1}
 .jbtn[aria-pressed="true"]{background:#1b2a44;border-color:currentColor}
 .jbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .jbtn.all{color:var(--gold)}
@@ -48,8 +48,8 @@ main{max-width:1700px;margin:0 auto;padding:8px 8px 24px}
 .jbtn.ast[aria-pressed="true"]{color:var(--ast)} .jbtn.sch[aria-pressed="true"]{color:var(--sch)}
 .jbtn.dnc[aria-pressed="true"]{color:var(--dnc)} .jbtn.rdm[aria-pressed="true"]{color:var(--rdm)}
 
-h2{font-size:.9rem;margin:14px 0 6px}
-h2 .hint{font-weight:400;font-size:.7rem;color:var(--dim);margin-left:7px}
+h2{font-size:.92rem;margin:15px 0 6px}
+h2 .hint{font-weight:400;font-size:.71rem;color:var(--dim);margin-left:8px}
 .jn-s{display:none}
 
 /* ================= タイムライン本体 ================= */
@@ -68,25 +68,25 @@ h2 .hint{font-weight:400;font-size:.7rem;color:var(--dim);margin-left:7px}
 /* ヘッダ：ジョブ名は略称のみ */
 .hc{
   position:sticky;top:0;z-index:5;background:var(--head);
-  text-align:center;font-size:.68rem;font-weight:800;padding:2px 1px;
+  text-align:center;font-size:.72rem;font-weight:800;padding:3px 2px;
   border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
 }
-.hc.corner{left:0;z-index:6;font-size:.56rem}
+.hc.corner{left:0;z-index:6;font-size:.62rem}
 
 /* 開幕バンド（時間軸の外） */
 .ob{
-  padding:2px 3px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
+  padding:2px 4px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line);
   background:#1b1809;min-width:0;
 }
-.ob.lead{position:sticky;left:0;z-index:4;background:#211d0d;border-left:2px solid var(--gold);border-right:1px solid var(--line)}
-.ob .olab{display:inline-block;background:#3a3112;border:1px solid #7a6420;border-radius:4px;padding:0 3px;font-size:.56rem;font-weight:800;color:var(--gold);white-space:nowrap}
-.ob .on{display:block;font-weight:800;font-size:.52rem;color:#ffe9ad;white-space:nowrap;overflow:hidden}
+.ob.lead{position:sticky;left:0;z-index:4;background:#211d0d;border-left:3px solid var(--gold);border-right:1px solid var(--line)}
+.ob .olab{display:inline-block;background:#3a3112;border:1px solid #7a6420;border-radius:4px;padding:0 4px;font-size:.62rem;font-weight:800;color:var(--gold);white-space:nowrap}
+.ob .on{display:block;font-weight:800;font-size:.6rem;color:#ffe9ad;white-space:nowrap;overflow:hidden}
 
 /* 時間軸の列 */
 .tcol{position:relative;z-index:1;border-right:1px solid var(--line2);min-width:0}
 .tcol.ruler{
   position:sticky;left:0;z-index:3;background:var(--ev);
-  border-right:1px solid var(--line);border-left:2px solid var(--line);
+  border-right:1px solid var(--line);border-left:3px solid var(--line);
 }
 
 /* 5秒ごとの薄い横線 */
@@ -99,50 +99,51 @@ h2 .hint{font-weight:400;font-size:.7rem;color:var(--dim);margin-left:7px}
 .gline.gc{color:var(--gc)}
 .gline.ht{color:var(--ht)}
 .gline.nazo{color:var(--nz);border-top-width:1px;border-top-style:dashed}
+/* 時刻＋ギミック名は線の上（2段）、軽減率は線の下 */
 .gtop{position:absolute;left:0;right:0;bottom:0}
 /* 軽減の数字は線にくっつける（枠の上辺を線に重ねる） */
 .gbot{position:absolute;left:0;right:0;top:-1px}
 .gname,.grate{
-  position:sticky;left:3px;width:max-content;
-  max-width:calc(var(--evw) - 6px);overflow:hidden;
+  position:sticky;left:4px;width:max-content;
+  max-width:calc(var(--evw) - 8px);overflow:hidden;
   background:#0e1726;border:1px solid currentColor;border-radius:4px;
 }
 /* font-size を自前で持たないと行ボックスが本文サイズで取られて枠が無駄に高くなる */
-.gname{display:block;padding:0 3px;font-size:.55rem;line-height:1.12}
-.gname .gt{display:block;font-size:.54rem;font-weight:900;color:var(--gold);white-space:nowrap}
-.gname .gn{display:block;font-size:.55rem;font-weight:800;white-space:nowrap}
+.gname{display:block;padding:0 3px;font-size:.6rem;line-height:1.14}
+.gname .gt{display:block;font-size:.58rem;font-weight:900;color:var(--gold);white-space:nowrap}
+.gname .gn{display:block;font-size:.6rem;font-weight:800;white-space:nowrap}
 /* なぞなぞは1行で、枠も最小に */
-.gline.nazo .gname{font-size:.48rem;line-height:1.1;padding:0 2px;border-radius:3px}
-.gline.nazo .gname .gt,.gline.nazo .gname .gn{display:inline;font-size:.48rem;font-weight:700}
+.gline.nazo .gname{font-size:.54rem;line-height:1.1;padding:0 2px;border-radius:3px}
+.gline.nazo .gname .gt,.gline.nazo .gname .gn{display:inline;font-size:.54rem;font-weight:700}
 .gline.nazo .gname .gt{margin-right:2px}
 /* 軽減率は数字だけ（例 15,10,10%） */
-.grate{padding:0 3px;font-size:.54rem;font-weight:800;color:#ffd886;line-height:1.1;white-space:nowrap}
+.grate{padding:0 3px;font-size:.58rem;font-weight:800;color:#ffd886;line-height:1.1;white-space:nowrap}
 
-/* バフの帯：2px の細線。始点に横棒・終点に▼ */
-.tbar{position:absolute;width:2px;border-radius:1px;background:currentColor}
+/* バフの帯：細い線。始点に横棒・終点に▼。Hot（青点線）はさらに細く */
+.tbar{position:absolute;width:3px;border-radius:2px;background:currentColor}
 .tbar.mit{color:var(--mit)}
-.tbar.heal{color:var(--heal)}
-.tbar.dash{background:repeating-linear-gradient(180deg,currentColor 0 3px,transparent 3px 6px)}
-.tbar.cap::before{content:"";position:absolute;top:-3px;left:-1px;right:-1px;height:2px;border-radius:1px;background:currentColor}
-.tbar.arrow::after{content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:3px solid transparent;border-right:3px solid transparent;border-top:5px solid currentColor}
+.tbar.heal{color:var(--heal);width:2px}
+.tbar.dash{background:repeating-linear-gradient(180deg,currentColor 0 3px,transparent 3px 7px)}
+.tbar.cap::before{content:"";position:absolute;top:-3px;left:-2px;right:-2px;height:2px;border-radius:2px;background:currentColor}
+.tbar.arrow::after{content:"";position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid currentColor}
 .tbar.clip::after{display:none}
 .tbar.clip{
-  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 12px),transparent 100%);
-          mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 12px),transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 14px),transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 14px),transparent 100%);
 }
 
-/* バフ名のチップ。緑枠＝軽減／青枠＝ヒール。軽減率は名前の下の行 */
+/* バフ名のチップ。緑枠＝軽減／青枠＝ヒール。軽減率は名前の下に改行して置く */
 .tchip{
-  position:absolute;right:2px;border:1px solid;border-radius:4px;padding:1px 2px;
-  font-size:.46rem;line-height:1.15;font-weight:800;letter-spacing:-.01em;
+  position:absolute;right:2px;border:1px solid;border-radius:5px;padding:1px 3px;
+  font-size:.57rem;line-height:1.2;font-weight:800;
 }
-.tchip.mit{background:#0e2b23;border-color:#2b8a68;color:#cdf8e8;--cc:var(--mit)}
-.tchip.heal{background:#0f2440;border-color:#2f6fa8;color:#d8eaff;--cc:var(--heal)}
+.tchip.mit{background:#0e2b23;border-color:#2b8a68;color:#c9f7e5;--cc:var(--mit)}
+.tchip.heal{background:#0f2440;border-color:#2f6fa8;color:#d4e8ff;--cc:var(--heal)}
 .tchip .nm{display:block;white-space:nowrap}
 .tchip .vl{display:block;white-space:nowrap;color:var(--warn)}
 .tchip.heal .vl{color:#9ccbff}
 /* 実際の使用秒とチップ位置がずれた分をつなぐ引き出し線 */
-.conn{position:absolute;left:-3px;top:5px;width:3px;height:1px;background:var(--cc);opacity:.5}
+.conn{position:absolute;left:-4px;top:6px;width:4px;height:1px;background:var(--cc);opacity:.5}
 .conn i{position:absolute;left:0;top:var(--ct,0px);width:1px;height:var(--ch,0px);background:var(--cc)}
 
 .pld{color:var(--pld)} .drk{color:var(--drk)} .ast{color:var(--ast)}
@@ -164,22 +165,22 @@ h2 .hint{font-weight:400;font-size:.7rem;color:var(--dim);margin-left:7px}
 .todo p{margin:0;font-size:.75rem;color:#ffe9ad}
 .todo ul{margin:6px 0 0;padding-left:1.1em}
 .todo li{font-size:.76rem;margin:4px 0;color:#ffe9ad}
-footer{margin:16px 0 0;color:var(--dim);font-size:.7rem;line-height:1.65}
+footer{margin:16px 0 0;color:var(--dim);font-size:.71rem;line-height:1.65}
 footer b{color:#e9f0f9}
 
 @media (max-width:760px){
-  /* 時刻60px + ジョブ55px×6 = 390px。横スクロールなしで6ジョブ入る */
-  :root{--evw:60px;--jobw:55px}
+  :root{--evw:70px;--jobw:72px}
   .tl{width:max-content;min-width:100%}
-  header{padding:9px 8px}
-  main{padding:6px 6px 20px}
-  .note{font-size:.72rem;padding:3px 7px}
+  header{padding:10px 9px}
+  main{padding:7px 7px 22px}
+  .note{font-size:.74rem;padding:4px 7px}
   .jn-l{display:none}
   .jn-s{display:inline}
   .ctrl .lbl{display:none}
   .ctrl{gap:4px}
-  .jbtn{padding:4px 8px}
-  .gname,.grate{left:2px;max-width:calc(var(--evw) - 4px)}
+  .jbtn{padding:5px 9px}
+  .gname,.grate{left:3px;max-width:calc(var(--evw) - 6px)}
+  .scrollhint{display:block;color:var(--dim);font-size:.69rem;padding:5px 8px;background:#0e1727;border-bottom:1px solid var(--line2);position:sticky;left:0}
   .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
 }
 
@@ -228,10 +229,9 @@ footer b{color:#e9f0f9}
   <div class="bar-row">
     <span class="pill"><span class="sw" style="background:var(--mit)"></span>緑＝軽減（実線＝効果範囲）</span>
     <span class="pill"><span class="sw" style="background:var(--heal)"></span>青＝ヒール（点線＝Hot範囲）</span>
-    <span class="pill">文字が小さい場合はピンチで拡大</span>
   </div>
 
-  <h2>タイムライン<span class="hint">名前が読みにくければ下のジョブ別メモを参照</span></h2>
+  <h2>タイムライン<span class="hint">ジョブ名のボタンで表示を絞り込めます</span></h2>
 
   <div class="ctrl" id="ctrl"><span class="lbl">表示ジョブ</span></div>
 
@@ -273,7 +273,8 @@ const JOBS = [
 
 /* ギミックの発動時刻
    tone : gc=グラクロ(紫) / ht=ほのお・つなみ(赤) / nazo=なぞなぞ(灰)
-   mit  : 軽減率。表には数字だけを「15,10,10%」の形で出す */
+   mit  : 軽減率。表には数字だけを「15,10,10%」の形で出す
+   チップは gc / ht の線（＝ダメージが入る線）をまたがないように配置する */
 const EVENTS = [
   {t:0,  tone:'nazo', name:'なぞなぞ'},
   {t:4,  tone:'gc',   name:'グラクロ1', mit:[15,10,10]},
@@ -298,8 +299,8 @@ const OPENING = {
    t      : 使用する秒
    dur    : 効果が続く秒（省略すると単発＝チップのみ）
    para   : 軽減とHotのように効果時間が別のものを、同じ秒から並行して2本引く
-   name   : 「|」で区切ると枠の中で改行する
-   val    : 表のチップで名前の下に出す数字
+   name   : 「|」で区切ると枠の中で改行する（例 'ホロスコ|＋コンヘリ'）
+   val    : 表のチップで名前の下に出す数字（例 '15%'）
    memo   : ジョブ別メモにだけ出す補足
    covers : 乗せたいギミックの秒（ジョブ別メモ用） */
 const BUFFS = [
@@ -370,8 +371,8 @@ const TODOS = [
 
 const AXIS_H = (T1 - T0) * PPS;
 const LANE_X0 = 3;   /* 列の左端から1本目の線までの余白 */
-const LANE_W  = 3;   /* 線どうしの間隔 */
-const GUT_PAD = 2;   /* 線とチップの間の余白 */
+const LANE_W  = 4;   /* 線どうしの間隔 */
+const GUT_PAD = 3;   /* 線とチップの間の余白 */
 const BAND_PAD = 2;  /* ギミックの線とチップの間の余白 */
 const CHIP_GAP = 2;  /* チップどうしの間隔 */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -413,7 +414,8 @@ JOBS.forEach(j=>{
 const gutter = id => LANE_X0 + (laneCount[id] - 1) * LANE_W + 2;
 const laneX  = n  => LANE_X0 + n * LANE_W;
 
-/* --- チップを収める「帯」。区切りはダメージが入る線（gc / ht）だけ --- */
+/* --- チップを収める「帯」。区切りはダメージが入る線（gc / ht）だけ。
+       なぞなぞの破線はまたいでよいので境界にしない --- */
 const HARD = EVENTS.filter(e=>e.tone !== 'nazo');
 const BANDS = {};
 BANDS[-1] = {top: BAND_PAD, bottom: y(HARD[0].t) - BAND_PAD};
@@ -438,6 +440,7 @@ function buffHTML(b){
       +  ' title="'+esc(plain(b.name))+'（'+(o.type==='mit'?'軽減':'Hot')+'）：'+mmss(o.t)+'〜'+mmss(o.t+o.dur)+'"></div>';
   });
 
+  /* 名前チップ。「|」で枠の中を改行、軽減率は名前の下の行。位置は relayout() で決める */
   const nm = esc(b.name).split('|').join('<br>');
   h += '<div class="tchip '+b.type+'" data-top="'+y(b.t)+'" data-band="'+bandOf(b.t)+'"'
     +  ' style="top:'+y(b.t)+'px;left:'+(gutter(b.job)+GUT_PAD)+'px"'
@@ -503,7 +506,8 @@ function render(){
   tl.innerHTML = h;
 }
 
-/* チップをダメージ線と線の間（帯）に収める */
+/* チップをダメージ線と線の間（帯）に収める。
+   発動秒そのままの位置を基本に、ぶつかった分だけ下へ送る。 */
 function relayout(){
   JOBS.forEach(j=>{
     const col = document.getElementById('col-'+j.id);
@@ -537,9 +541,9 @@ function relayout(){
       list.forEach((c,i)=>{
         c.style.top = tops[i] + 'px';
         const delta = (+c.dataset.top) - tops[i];
-        const a  = Math.min(5, delta);
-        const b2 = Math.max(5, delta);
-        c.style.setProperty('--ct', (a - 5) + 'px');
+        const a  = Math.min(6, delta);
+        const b2 = Math.max(6, delta);
+        c.style.setProperty('--ct', (a - 6) + 'px');
         c.style.setProperty('--ch', (b2 - a) + 'px');
       });
     });
